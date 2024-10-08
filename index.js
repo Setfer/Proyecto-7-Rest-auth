@@ -1,16 +1,3 @@
-//
-//
-//
-// 
-// Dos relaciones entre colecciones, la idea es que los usuarios tengan un dato relacionado también
-// CRUD completo de todas las colecciones
-// 2 roles de usuario con diferentes permisos
-// README.md con la documentación del proyecto, indicando los endpoints y que hace cada uno
-// Los usuarios sólo pueden ser creados con rol user
-// Crearemos nuestro primer admin cambiando su rol directamente en la BBDD
-// Los admins pueden modificar a un usuario normal para cambiar su rol y hacerlo admin también
-// Los admins pueden eliminar usuarios, pero un usuario se puede eliminar a si mismo
-// Existe un middleware que compruebe el token que se aporta en la petición para dejar pasar o mostrar un mensaje de error
 
 require('dotenv').config()
 const express = require("express")

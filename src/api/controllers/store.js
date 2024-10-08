@@ -33,27 +33,39 @@ const updateStore = async (req, res, next) => {
   try {
     const { id } = req.params
     const oldStore = await Store.findById(id)
-    const newStore = new Store(req.body)
-    newStore._id = id
+
+
     if (req.body.items) {
-      const oldItems = oldStore.items
-      const newItem = req.body.items.toString()
-      if (oldItems.includes(newItem)) {
+      const oldItems = oldStore.items || []
+      const newItems = Array.isArray(req.body.items)
+        ? req.body.items
+        : [req.body.items]
+
+      const itemsDuplicados = newItems.filter((item) => oldItems.includes(item))
+
+      if (itemsDuplicados.length > 0) {
         return res
           .status(400)
-          .json('El ítem ya esta añadido.')
+          .json(`El item ya esta incluido: ${itemsDuplicados.join(', ')}`)
       }
-      newStore.items = [].concat(newItem, oldItems)
-      const storeUp = await Store.findByIdAndUpdate(id, newStore, {
-        new: true
-      })
-      return res.status(200).json(storeUp)
-    } else {
-      items = oldStore.items
-      newStore.items = items
-      const storeUp = await Store.findByIdAndUpdate(id, newStore, { new: true })
-      return res.status(200).json(storeUp)
+
+      const ItemsActualizados = [...new Set([...oldItems, ...newItems])]
+      req.body.items = ItemsActualizados
+      const up = await Store.findByIdAndUpdate(
+        id,
+        { $set: req.body },
+        { new: true }
+      )
+      return res.status(200).json(up)
     }
+
+    const update = await Store.findByIdAndUpdate(
+      id,
+      { $set: req.body },
+      { new: true }
+    )
+
+    return res.status(200).json(update)
   } catch (error) {
     return res.status(400).json('Algo ha fallado')
   }
