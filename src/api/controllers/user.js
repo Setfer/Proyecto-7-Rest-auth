@@ -59,21 +59,27 @@ const addShoppingCart = async (req, res, next) => {
   try {
     const { id } = req.params
     const oldUser = await User.findById(id)
-    const newUser = new User(req.body)
-    newUser._id = id
     if (req.body.userName || req.body.password || req.body.admin) {
       return res.status(400).json('Solo puede añadir objetos al carro')
     }
-    const oldItems = oldUser.shopping
-    const newItem = req.body.shopping
-    if (oldItems.includes(newItem)) {
-      return res.status(400).json('El objeto ya está en el carrito de compras');
-    }
-    newUser.shopping = [].concat(newItem, oldItems)
-    const shoppingUp = await User.findByIdAndUpdate(id, newUser, {
-      new: true
-    })
-    return res.status(200).json(shoppingUp)
+
+    const oldShopping = oldUser.shopping
+    const newShopping = req.body.shopping
+
+    const oldShoppingString = oldShopping.map((shopping) => shopping.toString())
+    const newShoppingString = newShopping.map((shopping) => shopping.toString())
+
+    const shoppingActualizado = [
+      ...new Set([...oldShoppingString, ...newShoppingString])
+    ]
+    req.body.shopping = shoppingActualizado
+    const update = await User.findByIdAndUpdate(
+      id,
+      { $set: req.body },
+      { new: true }
+    )
+
+    return res.status(200).json(update)
   } catch (error) {
     return res.status(400).json('No se ha podido añadir el objeto')
   }
@@ -85,11 +91,11 @@ const cleanShoppingCart = async (req, res, next) => {
     if (req.body.userName || req.body.password || req.body.admin) {
       return res.status(400).json('Solo puede eliminar objetos al carro')
     }
-    const deleteItem = req.body.shopping
+    const deleteShopping = req.body.shopping
 
     const shoppingUp = await User.findByIdAndUpdate(
       id,
-      { $pull: { shopping:deleteItem  } },
+      { $pull: { shopping: { $in: deleteShopping } } },
       {
         new: true
       }
@@ -110,8 +116,6 @@ const updateUser = async (req, res, next) => {
     return res.status(400).json('error')
   }
 }
-
-
 
 module.exports = {
   register,

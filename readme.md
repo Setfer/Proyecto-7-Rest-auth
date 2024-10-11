@@ -6,6 +6,7 @@
 La base de datos estará compuesta de tres colecciones: **users**, **stores** y **products**.
 Cada **user** tendrá los siguientes atributos: 
 *Los elementos en negrita seran obligatorios*
+*Los elementos relacionados que añadamos(shoping e items), deberan de ir siempre dentro de un arrays*
 - **userName**: String 
 - **password** :Number
 - shopping: [ObjectId]
@@ -70,7 +71,7 @@ Se deja un usuario creado con permisos de administrador creado en BD, los datos 
 **Password**: admin123
 
 Tambien hay varios usuarios estandar creados, la contraseña dichos usuarios sera:
-*usuario123*
+*nombreusuario123*
 
 Hay dos semillas creadas, tanto para stores, como para prodcuts, podremos ejecutarlas de forma individual con:
 
